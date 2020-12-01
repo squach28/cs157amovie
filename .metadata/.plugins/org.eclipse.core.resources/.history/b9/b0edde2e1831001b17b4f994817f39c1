@@ -1,0 +1,72 @@
+
+//STEP 1. Import required packages
+import java.sql.*;
+
+public class JDBCExample {
+   // JDBC driver name and database URL
+   
+   static final String DB_URL = "jdbc:mysql://localhost/movie_reservation?serverTimezone=UTC";
+   
+   static final String USER = "root";
+   static final String PASS = "Marianovallejo9";
+   
+   public static void insertMovie(Statement statement, Connection connection, String name, int year, int length) {
+	   String sqlFormatName = "'" + name + "'";
+	  try {
+	   statement = connection.createStatement();
+	   statement.executeUpdate("INSERT INTO Movies " + "VALUES (" 
+	   
+	  } catch(Exception e) {
+		  System.out.println(e.getMessage());
+	  }
+   }
+   
+   public static void main(String[] args) {
+   Connection conn = null;
+   Statement stmt = null;
+   ResultSet rs = null;
+   try{
+      //STEP 2: Register JDBC driver (automatically done since JDBC 4.0)
+      // Class.forName("com.mysql.jdbc.Driver");
+
+      //STEP 3: Open a connection
+      System.out.println("Connecting to database...");
+      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+      //STEP 4: Execute a query
+      System.out.println("Update Movies");
+  
+      stmt = conn.createStatement();
+      stmt.executeUpdate("UPDATE Movies SET name = 'The Incredibles', year = 2004, length = 2 WHERE mID = 1");
+      System.out.println("Updated Movies where mID=1 to ('The Incredibles', 2004, 2)");
+      rs = stmt.executeQuery("Select * from Movies");
+      
+      //STEP 5: Process the results
+      while(rs.next()){
+          System.out.println("mID="+rs.getInt("mID")+", name="+rs.getString("name") + ", year="+rs.getInt("year")
+          + ", length=" + rs.getInt("length"));
+      } 
+      
+   }catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+   System.out.println("Goodbye!");
+}//end main
+}//end JDBCExample
